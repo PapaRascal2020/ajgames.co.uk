@@ -120,4 +120,24 @@ class PlayerController extends Controller
 
         return response()->json(['message' => 'Status and room updated successfully']);
     }
+
+    public function getFriendsOnlineStatus($playerId)
+    {
+        $player = Player::find($playerId);
+
+        if (!$player) {
+            return response()->json(['message' => 'Player not found'], 404);
+        }
+
+        $friends = $player->friends()->get();
+        $friendsOnlineStatus = $friends->map(function ($friend) {
+            return [
+                'friendId' => $friend->id,
+                'username' => $friend->username,
+                'onlineStatus' => $friend->online_status
+            ];
+        });
+
+        return response()->json(['friendsOnlineStatus' => $friendsOnlineStatus]);
+    }
 }
